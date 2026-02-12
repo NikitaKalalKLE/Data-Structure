@@ -1,0 +1,147 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Student {
+    int roll;
+    char name[50];
+    float marks;
+    struct Student* next;
+};
+
+// Create new node
+struct Student* createNode(int roll, char name[], float marks) {
+    struct Student* newNode = (struct Student*)malloc(sizeof(struct Student));
+    newNode->roll = roll;
+    strcpy(newNode->name, name);
+    newNode->marks = marks;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Insert at end
+struct Student* insertEnd(struct Student* head, int roll, char name[], float marks) {
+    struct Student* newNode = createNode(roll, name, marks);
+
+    if (head == NULL)
+        return newNode;
+
+    struct Student* temp = head;
+    while (temp->next != NULL)
+        temp = temp->next;
+
+    temp->next = newNode;
+    return head;
+}
+
+// Display list
+void display(struct Student* head) {
+    if (head == NULL) {
+        printf("No records found.\n");
+        return;
+    }
+
+    struct Student* temp = head;
+    while (temp != NULL) {
+        printf("Roll: %d | Name: %s | Marks: %.2f\n",
+               temp->roll, temp->name, temp->marks);
+        temp = temp->next;
+    }
+}
+
+// Search by roll number
+void search(struct Student* head, int roll) {
+    struct Student* temp = head;
+
+    while (temp != NULL) {
+        if (temp->roll == roll) {
+            printf("Record Found:\n");
+            printf("Roll: %d | Name: %s | Marks: %.2f\n",
+                   temp->roll, temp->name, temp->marks);
+            return;
+        }
+        temp = temp->next;
+    }
+    printf("Record not found.\n");
+}
+
+// Delete by roll number
+struct Student* deleteRecord(struct Student* head, int roll) {
+    struct Student *temp = head, *prev = NULL;
+
+    if (temp != NULL && temp->roll == roll) {
+        head = temp->next;
+        free(temp);
+        printf("Record deleted successfully.\n");
+        return head;
+    }
+
+    while (temp != NULL && temp->roll != roll) {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        printf("Record not found.\n");
+        return head;
+    }
+
+    prev->next = temp->next;
+    free(temp);
+    printf("Record deleted successfully.\n");
+    return head;
+}
+
+int main() {
+    struct Student* head = NULL;
+    int choice, roll;
+    char name[50];
+    float marks;
+
+    while (1) {
+        printf("\n--- Student Record Menu ---\n");
+        printf("1. Add Student\n");
+        printf("2. Display Students\n");
+        printf("3. Search Student\n");
+        printf("4. Delete Student\n");
+        printf("5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+        case 1:
+            printf("Enter Roll No: ");
+            scanf("%d", &roll);
+            printf("Enter Name: ");
+            scanf(" %[^\n]", name);
+            printf("Enter Marks: ");
+            scanf("%f", &marks);
+            head = insertEnd(head, roll, name, marks);
+            break;
+
+        case 2:
+            display(head);
+            break;
+
+        case 3:
+            printf("Enter Roll No to search: ");
+            scanf("%d", &roll);
+            search(head, roll);
+            break;
+
+        case 4:
+            printf("Enter Roll No to delete: ");
+            scanf("%d", &roll);
+            head = deleteRecord(head, roll);
+            break;
+
+        case 5:
+            exit(0);
+
+        default:
+            printf("Invalid choice!\n");
+        }
+    }
+
+    return 0;
+}
